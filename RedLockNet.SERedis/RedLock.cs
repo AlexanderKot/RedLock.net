@@ -70,13 +70,13 @@ namespace RedLockNet.SERedis
 
             if (expiryTime < MinimumExpiryTime)
             {
-                logger.LogWarning("Expiry time {expiryTimeTotalMilliseconds}ms too low, setting to {minimumExpiryTimeTotalMilliseconds}ms", expiryTime.TotalMilliseconds, MinimumExpiryTime.TotalMilliseconds);
+                logger.LogWarning("Expiry time {ExpiryTimeTotalMilliseconds}ms too low, setting to {MinimumExpiryTimeTotalMilliseconds}ms", expiryTime.TotalMilliseconds, MinimumExpiryTime.TotalMilliseconds);
                 expiryTime = MinimumExpiryTime;
             }
 
             if (retryTime != null && retryTime.Value < MinimumRetryTime)
             {
-                logger.LogWarning("Retry time {retryTimeTotalMilliseconds}ms too low, setting to {minimumRetryTimeTotalMilliseconds}ms", retryTime.Value.TotalMilliseconds, MinimumRetryTime.TotalMilliseconds);
+                logger.LogWarning("Retry time {RetryTimeTotalMilliseconds}ms too low, setting to {MinimumRetryTimeTotalMilliseconds}ms", retryTime.Value.TotalMilliseconds, MinimumRetryTime.TotalMilliseconds);
                 retryTime = MinimumRetryTime;
             }
 
@@ -215,7 +215,7 @@ namespace RedLockNet.SERedis
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var iteration = i + 1;
-                logger.LogDebug("Lock attempt {iteration}/{quorumRetryCount}: {Resource} ({LockId}), expiry: {expiryTime}", iteration, quorumRetryCount, Resource, LockId, expiryTime);
+                logger.LogDebug("Lock attempt {Iteration}/{QuorumRetryCount}: {Resource} ({LockId}), expiry: {ExpiryTime}", iteration, quorumRetryCount, Resource, LockId, expiryTime);
 
                 var stopwatch = Stopwatch.StartNew();
 
@@ -223,8 +223,8 @@ namespace RedLockNet.SERedis
 
                 var validityTicks = GetRemainingValidityTicks(stopwatch);
 
-                logger.LogDebug("Acquired locks for {Resource} ({LockId}) in {lockSummaryAcquired}/{redisCachesCount} instances, quorum: {quorum}, validityTicks: {validityTicks}",
-                Resource, LockId, lockSummary.Acquired, redisCaches.Count, quorum, validityTicks);
+                logger.LogDebug("Acquired locks for {Resource} ({LockId}) in {LockSummaryAcquired}/{RedisCachesCount} instances, quorum: {Quorum}, validityTicks: {ValidityTicks}",
+                                Resource, LockId, lockSummary.Acquired, redisCaches.Count, quorum, validityTicks);
 
                 if (lockSummary.Acquired >= quorum && validityTicks > 0)
                 {
@@ -239,7 +239,7 @@ namespace RedLockNet.SERedis
                 {
                     var sleepMs = ThreadSafeRandom.Next(quorumRetryDelayMs);
 
-                    logger.LogDebug("Sleeping {sleepMs}ms", sleepMs);
+                    logger.LogDebug("Sleeping {SleepMs}ms", sleepMs);
 
                     TaskUtils.Delay(sleepMs, cancellationToken).Wait(cancellationToken);
                 }
@@ -248,7 +248,7 @@ namespace RedLockNet.SERedis
             var status = GetFailedRedLockStatus(lockSummary);
 
             // give up
-            logger.LogDebug("Could not acquire quorum after {quorumRetryCount} attempts, giving up: {Resource} ({LockId}). {lockSummary}.",
+            logger.LogDebug("Could not acquire quorum after {QuorumRetryCount} attempts, giving up: {Resource} ({LockId}); {LockSummary}",
                 quorumRetryCount, Resource, LockId, lockSummary);
 
             return (status, lockSummary);
@@ -263,7 +263,7 @@ namespace RedLockNet.SERedis
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var iteration = i + 1;
-                logger.LogDebug("Lock attempt {iteration}/{quorumRetryCount}: {Resource} ({LockId}), expiry: {expiryTime}",
+                logger.LogDebug("Lock attempt {Iteration}/{QuorumRetryCount}: {Resource} ({LockId}), expiry: {ExpiryTime}",
                     iteration, quorumRetryCount, Resource, LockId, expiryTime);
 
                 var stopwatch = Stopwatch.StartNew();
@@ -272,7 +272,7 @@ namespace RedLockNet.SERedis
 
                 var validityTicks = GetRemainingValidityTicks(stopwatch);
 
-                logger.LogDebug("Acquired locks for {Resource} ({LockId}) in {lockSummaryAcquired}/{redisCachesCount} instances, quorum: {quorum}, validityTicks: {validityTicks}",
+                logger.LogDebug("Acquired locks for {Resource} ({LockId}) in {LockSummaryAcquired}/{RedisCachesCount} instances, quorum: {Quorum}, validityTicks: {ValidityTicks}",
                     Resource, LockId, lockSummary.Acquired, redisCaches.Count, quorum, validityTicks);
 
                 if (lockSummary.Acquired >= quorum && validityTicks > 0)
@@ -288,7 +288,7 @@ namespace RedLockNet.SERedis
                 {
                     var sleepMs = ThreadSafeRandom.Next(quorumRetryDelayMs);
 
-                    logger.LogDebug("Sleeping {sleepMs}ms", sleepMs);
+                    logger.LogDebug("Sleeping {SleepMs}ms", sleepMs);
 
                     await TaskUtils.Delay(sleepMs, cancellationToken).ConfigureAwait(false);
                 }
@@ -297,7 +297,7 @@ namespace RedLockNet.SERedis
             var status = GetFailedRedLockStatus(lockSummary);
 
             // give up
-            logger.LogDebug("Could not acquire quorum after {quorumRetryCount} attempts, giving up: {Resource} ({LockId}). {lockSummary}.", quorumRetryCount, Resource, LockId, lockSummary);
+            logger.LogDebug("Could not acquire quorum after {QuorumRetryCount} attempts, giving up: {Resource} ({LockId}). {LockSummary}", quorumRetryCount, Resource, LockId, lockSummary);
 
             return (status, lockSummary);
         }
@@ -306,7 +306,7 @@ namespace RedLockNet.SERedis
         {
             var interval = expiryTime.TotalMilliseconds / 2;
 
-            logger.LogDebug("Starting auto extend timer with {interval}ms interval", interval);
+            logger.LogDebug("Starting auto extend timer with {Interval}ms interval", interval);
 
             lockKeepaliveTimer = new Timer(
                 state => { ExtendLockLifetime(); },
@@ -366,10 +366,10 @@ namespace RedLockNet.SERedis
                     }
                 }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
                 // unlock has been called, don't extend
-                logger.LogDebug("Lock renewal cancelled: {Resource} ({LockId})", Resource, LockId);
+                logger.LogDebug(ex, "Lock renewal cancelled: {Resource} ({LockId})", Resource, LockId);
             }
         }
 
@@ -454,7 +454,7 @@ namespace RedLockNet.SERedis
 
             try
             {
-                logger.LogTrace("LockInstance enter {host}: {redisKey}, {LockId}, {expiryTime}", host, redisKey, LockId, expiryTime);
+                logger.LogTrace("LockInstance enter {Host}: {RedisKey}, {LockId}, {ExpiryTime}", host, redisKey, LockId, expiryTime);
                 var redisResult = cache.ConnectionMultiplexer
                     .GetDatabase(cache.RedisDatabase)
                     .StringSet(redisKey, LockId, expiryTime, When.NotExists, CommandFlags.DemandMaster);
@@ -463,12 +463,12 @@ namespace RedLockNet.SERedis
             }
             catch (Exception ex)
             {
-                logger.LogDebug("Error locking lock instance {host}: {exMessage}", host, ex.Message);
+                logger.LogDebug(ex, "Error locking lock instance {Host}: {ExMessage}", host, ex.Message);
 
                 result = RedLockInstanceResult.Error;
             }
 
-            logger.LogTrace("LockInstance exit {host}: {redisKey}, {LockId}, {result}", host, redisKey, LockId, result);
+            logger.LogTrace("LockInstance exit {Host}: {RedisKey}, {LockId}, {Result}", host, redisKey, LockId, result);
 
             return result;
         }
@@ -482,7 +482,7 @@ namespace RedLockNet.SERedis
 
             try
             {
-                logger.LogTrace("LockInstanceAsync enter {host}: {redisKey}, {LockId}, {expiryTime}", host, redisKey, LockId, expiryTime);
+                logger.LogTrace("LockInstanceAsync enter {Host}: {RedisKey}, {LockId}, {ExpiryTime}", host, redisKey, LockId, expiryTime);
                 var redisResult = await cache.ConnectionMultiplexer
                     .GetDatabase(cache.RedisDatabase)
                     .StringSetAsync(redisKey, LockId, expiryTime, When.NotExists, CommandFlags.DemandMaster)
@@ -492,12 +492,12 @@ namespace RedLockNet.SERedis
             }
             catch (Exception ex)
             {
-                logger.LogDebug("Error locking lock instance {host}: {exMessage}", host, ex.Message);
+                logger.LogDebug(ex, "Error locking lock instance {Host}: {ExMessage}", host, ex.Message);
 
                 result = RedLockInstanceResult.Error;
             }
 
-            logger.LogTrace("LockInstanceAsync exit {host}: {redisKey}, {LockId}, {result}", host, redisKey, LockId, result);
+            logger.LogTrace("LockInstanceAsync exit {Host}: {RedisKey}, {LockId}, {Result}", host, redisKey, LockId, result);
 
             return result;
         }
@@ -511,7 +511,7 @@ namespace RedLockNet.SERedis
 
             try
             {
-                logger.LogTrace("ExtendInstance enter {host}: {redisKey}, {LockId}, {expiryTime}", host, redisKey, LockId, expiryTime);
+                logger.LogTrace("ExtendInstance enter {Host}: {RedisKey}, {LockId}, {ExpiryTime}", host, redisKey, LockId, expiryTime);
 
                 // Returns 1 on success, 0 on failure setting expiry or key not existing, -1 if the key value didn't match
                 var extendResult = (long)cache.ConnectionMultiplexer
@@ -524,12 +524,12 @@ namespace RedLockNet.SERedis
             }
             catch (Exception ex)
             {
-                logger.LogDebug("Error extending lock instance {host}: {exMessage}", host, ex.Message);
+                logger.LogDebug(ex, "Error extending lock instance {Host}: {ExMessage}", host, ex.Message);
 
                 result = RedLockInstanceResult.Error;
             }
 
-            logger.LogTrace("ExtendInstance exit {host}: {redisKey}, {LockId}, {result}", host, redisKey, LockId, result);
+            logger.LogTrace("ExtendInstance exit {Host}: {RedisKey}, {LockId}, {Result}", host, redisKey, LockId, result);
 
             return result;
         }
@@ -543,17 +543,17 @@ namespace RedLockNet.SERedis
 
             try
             {
-                logger.LogTrace("UnlockInstance enter {host}: {redisKey}, {LockId}");
+                logger.LogTrace("UnlockInstance enter {Host}: {RedisKey}, {LockId}", host, redisKey, LockId);
                 result = (bool)cache.ConnectionMultiplexer
                     .GetDatabase(cache.RedisDatabase)
                     .ScriptEvaluate(UnlockScript, new RedisKey[] { redisKey }, new RedisValue[] { LockId }, CommandFlags.DemandMaster);
             }
             catch (Exception ex)
             {
-                logger.LogDebug("Error unlocking lock instance {host}: {exMessage}", host, ex.Message);
+                logger.LogDebug(ex, "Error unlocking lock instance {Host}: {ExMessage}", host, ex.Message);
             }
 
-            logger.LogTrace("UnlockInstance exit {host}: {redisKey}, {LockId}, {result}", host, redisKey, LockId, result);
+            logger.LogTrace("UnlockInstance exit {Host}: {RedisKey}, {LockId}, {Result}", host, redisKey, LockId, result);
         }
 
         private async Task<bool> UnlockInstanceAsync(RedisConnection cache)
@@ -565,8 +565,7 @@ namespace RedLockNet.SERedis
 
             try
             {
-                logger.LogTrace("UnlockInstanceAsync enter {host}: {redisKey}, {LockId}",
-                    host, redisKey, LockId);
+                logger.LogTrace("UnlockInstanceAsync enter {Host}: {RedisKey}, {LockId}", host, redisKey, LockId);
 
                 result = (bool)await cache.ConnectionMultiplexer
                     .GetDatabase(cache.RedisDatabase)
@@ -575,10 +574,10 @@ namespace RedLockNet.SERedis
             }
             catch (Exception ex)
             {
-                logger.LogDebug("Error unlocking lock instance {host}: {exMessage}", host, ex.Message);
+                logger.LogDebug(ex, "Error unlocking lock instance {Host}: {ExMessage}", host, ex.Message);
             }
 
-            logger.LogTrace("UnlockInstanceAsync exit {host}: {redisKey}, {LockId}, {result}", host, redisKey, LockId, result);
+            logger.LogTrace("UnlockInstanceAsync exit {Host}: {RedisKey}, {LockId}, {Result}", host, redisKey, LockId, result);
 
             return result;
         }

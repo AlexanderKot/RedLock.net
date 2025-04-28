@@ -67,27 +67,27 @@ namespace RedLockNet.SERedis.Configuration
 
 				redisConnection.ConnectionMultiplexer.ConnectionFailed += (sender, args) =>
 				{
-					logger.LogWarning($"ConnectionFailed: {args.EndPoint.GetFriendlyName()} ConnectionType: {args.ConnectionType} FailureType: {args.FailureType}");
+					logger.LogWarning("ConnectionFailed: {EndPoint} ConnectionType: {ConnectionType} FailureType: {FailureType}", args.EndPoint.GetFriendlyName(), args.ConnectionType, args.FailureType);
 				};
 
 				redisConnection.ConnectionMultiplexer.ConnectionRestored += (sender, args) =>
 				{
-					logger.LogWarning($"ConnectionRestored: {args.EndPoint.GetFriendlyName()} ConnectionType: {args.ConnectionType} FailureType: {args.FailureType}");
+					logger.LogWarning("ConnectionRestored: {EndPoint} ConnectionType: {Connection} FailureType: {Failure}", args.EndPoint.GetFriendlyName(), args.ConnectionType, args.FailureType);
 				};
 
 				redisConnection.ConnectionMultiplexer.ConfigurationChanged += (sender, args) =>
 				{
-					logger.LogDebug($"ConfigurationChanged: {args.EndPoint.GetFriendlyName()}");
+					logger.LogDebug("ConfigurationChanged: {EndPoint}", args.EndPoint.GetFriendlyName());
 				};
 
 				redisConnection.ConnectionMultiplexer.ConfigurationChangedBroadcast += (sender, args) =>
 				{
-					logger.LogDebug($"ConfigurationChangedBroadcast: {args.EndPoint.GetFriendlyName()}");
+					logger.LogDebug("ConfigurationChangedBroadcast: {EndPoint}", args.EndPoint.GetFriendlyName());
 				};
 
 				redisConnection.ConnectionMultiplexer.ErrorMessage += (sender, args) =>
 				{
-					logger.LogWarning($"ErrorMessage: {args.EndPoint.GetFriendlyName()} Message: {args.Message}");
+					logger.LogWarning("ErrorMessage: {EndPoint} Message: {Message}", args.EndPoint.GetFriendlyName(), args.Message);
 				};
 
 				connections.Add(redisConnection);
